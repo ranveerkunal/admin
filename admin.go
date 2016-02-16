@@ -68,6 +68,7 @@ func FetchStatus(s *Status, ms *mgo.Session, enc encoder.Encoder, r *http.Reques
 	return http.StatusOK, encoder.Must(enc.Encode(s))
 }
 
-func OK(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+func OK(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Set("Content-Type", "text/plain")
+	rw.Write([]byte("OK"))
 }
