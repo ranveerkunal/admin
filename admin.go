@@ -11,9 +11,8 @@ import (
 
 	"labix.org/v2/mgo"
 
+	"github.com/GoIncremental/negroni-sessions"
 	"github.com/martini-contrib/encoder"
-	"github.com/martini-contrib/sessions"
-	"github.com/ranveerkunal/weblogger"
 )
 
 var (
@@ -49,15 +48,16 @@ type Status struct {
 	Log       map[string]Log
 }
 
-func Authorize(s sessions.Session, wlog *weblogger.Logger, r *http.Request, w http.ResponseWriter) {
+func Authorize(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	fmt.Printf("Invoked Auth: %v\n", r.URL)
-	fmt.Printf("Invoked Auth: %v\n", s.Get("user_id"))
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	ip := net.ParseIP(host)
+	s := sessions.GetSession(r)
 	if err != nil || (s.Get("user_id") != *admin && !ip.IsLoopback()) {
-		wlog.Remotef("user: %s, ip: %s", s.Get("user_id"), ip)
-		http.Error(w, "Please spare me :P", http.StatusUnauthorized)
+		http.Error(rw, "Please spare me :P", http.StatusUnauthorized)
+		return
 	}
+	next(rw, r)
 }
 
 func FetchStatus(s *Status, ms *mgo.Session, enc encoder.Encoder, r *http.Request) (int, []byte) {
@@ -68,6 +68,6 @@ func FetchStatus(s *Status, ms *mgo.Session, enc encoder.Encoder, r *http.Reques
 	return http.StatusOK, encoder.Must(enc.Encode(s))
 }
 
-func OK(s *Status, r *http.Request) (int, []byte) {
-	return http.StatusOK, []byte("ok")
+func OK(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
 }
