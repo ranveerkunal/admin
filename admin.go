@@ -69,7 +69,6 @@ func FetchStatus(s *Status, ms *mgo.Session, enc encoder.Encoder, r *http.Reques
 }
 
 func OK(rw http.ResponseWriter, r *http.Request) {
-	og.Fatal("Setting OK")
 	rw.Header().Set("Content-Type", "text/plain")
 	rw.Write([]byte("OK"))
 }
