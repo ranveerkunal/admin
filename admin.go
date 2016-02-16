@@ -11,7 +11,7 @@ import (
 
 	"labix.org/v2/mgo"
 
-	"github.com/GoIncremental/negroni-sessions"
+	"github.com/goincremental/negroni-sessions"
 	"github.com/martini-contrib/encoder"
 )
 
